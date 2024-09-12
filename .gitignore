@@ -2,3 +2,4 @@ magellan
 emulator/rf-emulator
 **/*.db
 dist/*
+**coverage.out**
