@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/OpenCHAMI/magellan/internal/util"
 	magellan "github.com/OpenCHAMI/magellan/pkg"
@@ -78,22 +77,7 @@ func DeleteScannedAssets(path string, assets ...magellan.RemoteAsset) error {
 	}
 	tx = db.MustBegin()
 	for _, asset := range assets {
-		// skip if neither host nor port are specified
-		if asset.Host == "" && asset.Port <= 0 {
-			continue
-		}
-		sql := fmt.Sprintf(`DELETE FROM %s`, TABLE_NAME)
-		where := []string{}
-		if asset.Port > 0 {
-			where = append(where, "port=:port")
-		}
-		if asset.Host != "" {
-			where = append(where, "host=:host")
-		}
-		if len(where) <= 0 {
-			continue
-		}
-		sql += fmt.Sprintf(" WHERE %s;", strings.Join(where, " AND "))
+		sql := fmt.Sprintf(`DELETE FROM %s WHERE host=:host AND port=:port;`, TABLE_NAME)
 		_, err := tx.NamedExec(sql, &asset)
 		if err != nil {
 			fmt.Printf("failed to execute DELETE transaction: %v\n", err)
