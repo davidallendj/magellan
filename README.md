@@ -332,7 +332,7 @@ The `magellan` tool has a `login` subcommand that works with the [`opaal`](https
 export ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIs...
 ```
 
-Alternatively, if you are running the davidallendj quickstart in the [deployment recipes](https://github.com/davidallendj/deployment-recipes), you can run the provided script to generate a token and set the environment variable that way.
+Alternatively, if you are running the OpenCHAMI quickstart in the [deployment recipes](https://github.com/davidallendj/deployment-recipes), you can run the provided script to generate a token and set the environment variable that way.
 
 ```bash
 quickstart_dir=path/to/deployment/recipes/quickstart
