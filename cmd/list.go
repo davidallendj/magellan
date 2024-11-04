@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OpenCHAMI/magellan/internal/cache/sqlite"
+	"github.com/davidallendj/magellan/internal/cache/sqlite"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 

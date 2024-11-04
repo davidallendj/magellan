@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/OpenCHAMI/magellan/internal/util"
-	magellan "github.com/OpenCHAMI/magellan/pkg"
+	"github.com/davidallendj/magellan/internal/util"
+	magellan "github.com/davidallendj/magellan/pkg"
 
 	"github.com/jmoiron/sqlx"
 )

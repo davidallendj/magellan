@@ -7,13 +7,13 @@ import (
 	"os"
 	"path"
 
-	"github.com/OpenCHAMI/magellan/internal/cache/sqlite"
-	magellan "github.com/OpenCHAMI/magellan/pkg"
+	"github.com/davidallendj/magellan/internal/cache/sqlite"
+	magellan "github.com/davidallendj/magellan/pkg"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
-	urlx "github.com/OpenCHAMI/magellan/internal/url"
 	"github.com/cznic/mathutil"
+	urlx "github.com/davidallendj/magellan/internal/url"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
