@@ -11,8 +11,8 @@ import (
 	magellan "github.com/OpenCHAMI/magellan/pkg"
 	"github.com/rs/zerolog/log"
 
-	urlx "github.com/OpenCHAMI/magellan/internal/url"
 	"github.com/cznic/mathutil"
+	urlx "github.com/davidallendj/magellan/internal/url"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
