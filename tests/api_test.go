@@ -22,9 +22,9 @@ import (
 
 	"flag"
 
-	"github.com/OpenCHAMI/magellan/internal/util"
-	magellan "github.com/OpenCHAMI/magellan/pkg"
-	"github.com/OpenCHAMI/magellan/pkg/client"
+	"github.com/davidallendj/magellan/internal/util"
+	magellan "github.com/davidallendj/magellan/pkg"
+	"github.com/davidallendj/magellan/pkg/client"
 	"github.com/rs/zerolog/log"
 )
 

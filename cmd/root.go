@@ -19,8 +19,8 @@ import (
 	"net"
 	"os"
 
-	magellan "github.com/OpenCHAMI/magellan/internal"
-	"github.com/OpenCHAMI/magellan/internal/util"
+	magellan "github.com/davidallendj/magellan/internal"
+	"github.com/davidallendj/magellan/internal/util"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

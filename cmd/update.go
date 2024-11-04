@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	magellan "github.com/OpenCHAMI/magellan/pkg"
-	"github.com/OpenCHAMI/magellan/pkg/bmc"
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	magellan "github.com/davidallendj/magellan/pkg"
+	"github.com/davidallendj/magellan/pkg/bmc"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
