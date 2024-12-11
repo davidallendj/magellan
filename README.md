@@ -37,7 +37,7 @@ The `magellan` tool comes packed with a handleful of features for doing discover
 - Simple network scanning
 - Redfish-based inventory collection
 - Redfish-based firmware updating
-- Integration with OpenCHAMI SMD
+- Integration with davidallendj SMD
 - Write inventory data to JSON
 - Store and manage BMC secrets
 
@@ -204,9 +204,8 @@ We can then save the output and make a request with the `send` subcommand or pip
     --timeout 5 \
     --username $USERNAME \
     --password $PASSWORD \
-    --host https://example.openchami.cluster:8443 \
-    --format yaml \
-    --output-file nodes.yaml \
+    --host https://example.davidallendj.cluster:8443 \
+    --output logs/
     --cacert cacert.pem
 ```
 
@@ -371,7 +370,7 @@ The `magellan` tool has a `login` subcommand that works with the [`opaal`](https
 export ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIs...
 ```
 
-Alternatively, if you are running the OpenCHAMI quickstart in the [deployment recipes](https://github.com/davidallendj/deployment-recipes), you can run the provided script to generate a token and set the environment variable that way.
+Alternatively, if you are running the davidallendj quickstart in the [deployment recipes](https://github.com/davidallendj/deployment-recipes), you can run the provided script to generate a token and set the environment variable that way.
 
 ```bash
 quickstart_dir=path/to/deployment/recipes/quickstart
@@ -390,7 +389,7 @@ docker pull ghcr.io/davidallendj/magellan:latest
 Then, run either with the helper script found in `bin/magellan.sh` or the binary in the container:
 
 ```bash
-docker run ghcr.io/openchami/magellan:latest /magellan.sh --scan "--subnet 172.16.0.0 --port 443 --timeout 3" --collect "--user admin --pass password --host http://vm01 --port 27779"
+docker run ghcr.io/davidallendj/magellan:latest /magellan.sh --scan "--subnet 172.16.0.0 --port 443 --timeout 3" --collect "--user admin --pass password --host http://vm01 --port 27779"
 # ... or ..
 docker ghcr.io/openhami/magellan:latest /magellan scan --subnet 172.16.0.0 --subnet-mask 255.255.255.0
 ```
