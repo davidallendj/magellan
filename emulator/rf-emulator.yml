@@ -6,7 +6,7 @@ volumes:
 
 services:
   emulator:
-    image: openchami-rie:latest
+    image: davidallendj-rie:latest
     container_name: rf-emulator
     environment:
       BMC_PORT: 5000

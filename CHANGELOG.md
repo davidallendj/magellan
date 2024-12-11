@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Miscellaneous
 
- * Merge pull request #55 from OpenCHAMI/cacert-hotfix
+ * Merge pull request #55 from davidallendj/cacert-hotfix
 
 ## [0.1.4]
 
@@ -43,11 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Miscellaneous
 
  * Merge branch 'main' into minor-changes
- * Merge pull request #50 from OpenCHAMI/container-build
- * Merge pull request #51 from OpenCHAMI/minor-changes
- * Merge pull request #52 from OpenCHAMI/minor-changes
- * Merge pull request #53 from OpenCHAMI/minor-changes
- * Merge pull request #54 from OpenCHAMI/update-readme
+ * Merge pull request #50 from davidallendj/container-build
+ * Merge pull request #51 from davidallendj/minor-changes
+ * Merge pull request #52 from davidallendj/minor-changes
+ * Merge pull request #53 from davidallendj/minor-changes
+ * Merge pull request #54 from davidallendj/update-readme
  * Rearranged collect error to only show when not force updating
  * Updated README.md and fixed outdated info
  * magellan.sh: remove unused build helper function
@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Miscellaneous
 
- * Merge pull request #49 from OpenCHAMI/add-types
+ * Merge pull request #49 from davidallendj/add-types
 
 ## [0.1.0]
 
@@ -263,7 +263,7 @@ Tidied up CLI flag names
 ### Added
 
  * Adding dev container to standardize Linux build
- * Merge pull request #1 from OpenCHAMI/rehome
+ * Merge pull request #1 from davidallendj/rehome
 
 ## [0.0.5] - 2023-11-02
 
