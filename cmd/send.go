@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	urlx "github.com/OpenCHAMI/magellan/internal/url"
-	"github.com/OpenCHAMI/magellan/pkg/auth"
-	"github.com/OpenCHAMI/magellan/pkg/client"
+	urlx "github.com/davidallendj/magellan/internal/url"
+	"github.com/davidallendj/magellan/pkg/auth"
+	"github.com/davidallendj/magellan/pkg/client"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
