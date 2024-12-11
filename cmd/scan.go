@@ -180,7 +180,7 @@ var ScanCmd = &cobra.Command{
 }
 
 func init() {
-	// scanCmd.Flags().StringSliceVar(&hosts, "host", []string{}, "set additional hosts to scan")
+	// ScanCmd.Flags().StringSliceVar(&hosts, "host", []string{}, "set additional hosts to scan")
 	ScanCmd.Flags().StringSliceVar(&hosts, "host", nil, "Add individual hosts to scan. (example: https://my.bmc.com:5000; same as using positional args)")
 	ScanCmd.Flags().IntSliceVar(&ports, "port", nil, "Adds additional ports to scan for each host with unspecified ports.")
 	ScanCmd.Flags().StringVar(&scheme, "scheme", "https", "Set the default scheme to use if not specified in host URI. (default is 'https')")
