@@ -56,29 +56,28 @@ archives:
       - magellan.1
 
 nfpms:
-  - id: magellan
-    formats: 
-      - deb
-      - rpm
-      - apk
-      - archlinux
-    maintainer: "David J. Allen <allend@lanl.gov>"
-    description: "Magellan is a discovery tool for BMCs."
-    homepage: "https://www.openchami.org"
-    license: MIT
-    section: utils
-    priority: optional
-    contents:
-      - src: magellan.1
-        dst: /usr/share/man/man1/
-
+        - id: magellan
+          formats: 
+          - deb
+          - rpm
+          - apk
+          - archlinux
+          maintainer: "David J. Allen <allend@lanl.gov>"
+          description: "Magellan is a discovery tool for BMCs."
+          homepage: "https://towk2.me"
+          license: MIT
+          section: utils
+          priority: optional
+          contents:
+            - src: magellan.1
+              dst: /usr/share/man/man1/
 
 
 dockers:
   - image_templates:
-      - &amd64_linux_image ghcr.io/openchami/{{.ProjectName}}:{{ .Tag }}-amd64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}-amd64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-amd64
+      - &amd64_linux_image ghcr.io/davidallendj/{{.ProjectName}}:{{ .Tag }}-amd64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}-amd64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-amd64
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -94,9 +93,9 @@ dockers:
       - CHANGELOG.md
       - README.md
   - image_templates:
-      - &arm64v7_linux_image ghcr.io/openchami/{{.ProjectName}}:{{ .Tag }}-arm64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}-arm64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-arm64
+      - &arm64v8_linux_image ghcr.io/davidallendj/{{.ProjectName}}:{{ .Tag }}-arm64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}-arm64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-arm64
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -112,22 +111,22 @@ dockers:
     goarch: arm64
 
 docker_manifests:
-  - name_template: "ghcr.io/openchami/{{.ProjectName}}:latest"
+  - name_template: "ghcr.io/davidallendj/{{.ProjectName}}:latest"
     image_templates:
       - *amd64_linux_image
       - *arm64v7_linux_image
 
-  - name_template: "ghcr.io/openchami/{{.ProjectName}}:{{ .Tag }}"
+  - name_template: "ghcr.io/davidallendj/{{.ProjectName}}:{{ .Tag }}"
     image_templates:
       - *amd64_linux_image
       - *arm64v7_linux_image
 
-  - name_template: "ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}"
+  - name_template: "ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}"
     image_templates:
       - *amd64_linux_image
       - *arm64v7_linux_image
 
-  - name_template: "ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
+  - name_template: "ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
     image_templates:
       - *amd64_linux_image
       - *arm64v7_linux_image
