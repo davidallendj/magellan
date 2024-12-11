@@ -25,7 +25,7 @@ var (
 // The `update` command provides an interface to easily update firmware
 // using Redfish. It also provides a simple way to check the status of
 // an update in-progress.
-var updateCmd = &cobra.Command{
+var UpdateCmd = &cobra.Command{
 	Use: "update hosts...",
 	Example: `  // perform an firmware update
   magellan update 172.16.0.108:443 -i -u $bmc_username -p $bmc_password \
@@ -121,17 +121,21 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	updateCmd.Flags().StringVarP(&username, "username", "u", "", "Set the BMC user")
-	updateCmd.Flags().StringVarP(&password, "password", "p", "", "Set the BMC password")
-	updateCmd.Flags().StringVar(&transferProtocol, "scheme", "https", "Set the transfer protocol")
-	updateCmd.Flags().StringVar(&firmwareUri, "firmware-uri", "", "Set the URI to retrieve the firmware")
-	updateCmd.Flags().BoolVar(&showStatus, "status", false, "Get the status of the update")
-	updateCmd.Flags().BoolVarP(&Insecure, "insecure", "i", false, "Allow insecure connections to the server")
+	UpdateCmd.Flags().StringVar(&username, "username", "", "Set the BMC user")
+	UpdateCmd.Flags().StringVar(&password, "password", "", "Set the BMC password")
+	UpdateCmd.Flags().StringVar(&transferProtocol, "scheme", "https", "Set the transfer protocol")
+	UpdateCmd.Flags().StringVar(&firmwareUrl, "firmware-url", "", "Set the path to the firmware")
+	UpdateCmd.Flags().StringVar(&firmwareVersion, "firmware-version", "", "Set the version of firmware to be installed")
+	UpdateCmd.Flags().StringVar(&component, "component", "", "Set the component to upgrade (BMC|BIOS)")
+	UpdateCmd.Flags().BoolVar(&showStatus, "status", false, "Get the status of the update")
 
-	checkBindFlagError(viper.BindPFlag("update.scheme", updateCmd.Flags().Lookup("scheme")))
-	checkBindFlagError(viper.BindPFlag("update.firmware-uri", updateCmd.Flags().Lookup("firmware-uri")))
-	checkBindFlagError(viper.BindPFlag("update.status", updateCmd.Flags().Lookup("status")))
-	checkBindFlagError(viper.BindPFlag("update.insecure", updateCmd.Flags().Lookup("insecure")))
+	checkBindFlagError(viper.BindPFlag("update.username", UpdateCmd.Flags().Lookup("username")))
+	checkBindFlagError(viper.BindPFlag("update.password", UpdateCmd.Flags().Lookup("password")))
+	checkBindFlagError(viper.BindPFlag("update.scheme", UpdateCmd.Flags().Lookup("scheme")))
+	checkBindFlagError(viper.BindPFlag("update.firmware-url", UpdateCmd.Flags().Lookup("firmware-url")))
+	checkBindFlagError(viper.BindPFlag("update.firmware-version", UpdateCmd.Flags().Lookup("firmware-version")))
+	checkBindFlagError(viper.BindPFlag("update.component", UpdateCmd.Flags().Lookup("component")))
+	checkBindFlagError(viper.BindPFlag("update.status", UpdateCmd.Flags().Lookup("status")))
 
-	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(UpdateCmd)
 }
