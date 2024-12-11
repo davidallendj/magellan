@@ -131,5 +131,5 @@ func init() {
 	checkBindFlagError(viper.BindPFlag("update.firmware-uri", UpdateCmd.Flags().Lookup("firmware-uri")))
 	checkBindFlagError(viper.BindPFlag("update.status", UpdateCmd.Flags().Lookup("status")))
 
-	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(UpdateCmd)
 }
