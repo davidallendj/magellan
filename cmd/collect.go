@@ -3,6 +3,10 @@ package cmd
 import (
 	"encoding/json"
 
+	"github.com/OpenCHAMI/magellan/internal/cache/sqlite"
+	urlx "github.com/OpenCHAMI/magellan/internal/url"
+	magellan "github.com/OpenCHAMI/magellan/pkg"
+	"github.com/OpenCHAMI/magellan/pkg/auth"
 	"github.com/cznic/mathutil"
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
 	urlx "github.com/davidallendj/magellan/internal/urlx"
