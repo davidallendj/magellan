@@ -133,5 +133,5 @@ func init() {
 	checkBindFlagError(viper.BindPFlag("update.status", updateCmd.Flags().Lookup("status")))
 	checkBindFlagError(viper.BindPFlag("update.insecure", updateCmd.Flags().Lookup("insecure")))
 
-	rootCmd.AddCommand(UpdateCmd)
+	rootCmd.AddCommand(updateCmd)
 }
