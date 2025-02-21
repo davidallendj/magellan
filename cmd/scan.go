@@ -7,8 +7,8 @@ import (
 	"os"
 	"path"
 
-	magellan "github.com/davidallendj/magellan/internal"
-	"github.com/davidallendj/magellan/internal/cache/sqlite"
+	"github.com/OpenCHAMI/magellan/internal/cache/sqlite"
+	magellan "github.com/OpenCHAMI/magellan/pkg"
 	"github.com/rs/zerolog/log"
 
 	"github.com/cznic/mathutil"

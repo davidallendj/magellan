@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	magellan "github.com/davidallendj/magellan/internal"
+	magellan "github.com/OpenCHAMI/magellan/pkg"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -99,5 +99,5 @@ func init() {
 	checkBindFlagError(viper.BindPFlag("update.status", updateCmd.Flags().Lookup("status")))
 	checkBindFlagError(viper.BindPFlag("update.insecure", updateCmd.Flags().Lookup("insecure")))
 
-	rootCmd.AddCommand(UpdateCmd)
+	rootCmd.AddCommand(updateCmd)
 }
