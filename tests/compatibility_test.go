@@ -14,8 +14,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/davidallendj/magellan/pkg/client"
-	"github.com/davidallendj/magellan/pkg/crawler"
+	"github.com/OpenCHAMI/magellan/pkg/client"
+	"github.com/OpenCHAMI/magellan/pkg/crawler"
+	"github.com/OpenCHAMI/magellan/pkg/secrets"
 )
 
 var (
@@ -126,12 +127,17 @@ func TestExpectedOutput(t *testing.T) {
 		t.Fatalf("failed while waiting for emulator: %v", err)
 	}
 
+	// initialize a credential store
+	staticStore := &secrets.StaticStore{
+		Username: *username,
+		Password: *password,
+	}
+
 	systems, err := crawler.CrawlBMCForSystems(
 		crawler.CrawlerConfig{
-			URI:      *host,
-			Username: *username,
-			Password: *password,
-			Insecure: true,
+			URI:             *host,
+			CredentialStore: staticStore,
+			Insecure:        true,
 		},
 	)
 
