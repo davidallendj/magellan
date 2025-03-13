@@ -1,12 +1,11 @@
 package magellan
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 
-	"github.com/OpenCHAMI/magellan/pkg/client"
+	"github.com/stmcginnis/gofish"
+	"github.com/stmcginnis/gofish/redfish"
 )
 
 type UpdateParams struct {
