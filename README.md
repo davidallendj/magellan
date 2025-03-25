@@ -19,6 +19,8 @@ The `magellan` CLI tool is a Redfish-based, board management controller (BMC) di
     - [Running the Tool](#running-the-tool)
     - [Managing Secrets](#managing-secrets)
     - [Starting the Emulator](#starting-the-emulator)
+    - [Managing Secrets](#managing-secrets-1)
+    - [Starting the Emulator](#starting-the-emulator-1)
     - [Updating Firmware](#updating-firmware)
     - [Getting an Access Token (WIP)](#getting-an-access-token-wip)
     - [Running with Docker](#running-with-docker)
@@ -302,6 +304,87 @@ If you pass arguments with the `--username/--password` flags, the arguments will
 > ```bash
 > magellan secrets default $username:$password
 > ```
+
+### Starting the Emulator
+
+This repository includes a quick and dirty way to test `magellan` using a Redfish emulator with little to no effort to get running.
+
+1. Make sure you have `docker` with Docker compose and optionally `make`.
+
+2. Run the `emulator/setup.sh` script or alternatively `make emulator`.
+
+This will start a flask server that you can make requests to using `curl`.
+
+```bash
+export emulator_host=https://172.21.0.2:5000
+export emulator_username=root           # set in the `rf_emulator.yml` file
+export emulator_password=root_password  # set in the `rf_emulator.yml` file
+curl -k $emulator_host/redfish/v1 -u $emulator_username:$emulator_password
+```
+
+...or with `magellan` using the secret store...
+
+```bash
+magellan scan --subnet 172.21.0.0/24
+magellan secrets store \
+  $emulator_host \
+  $emulator_username:$emulator_password
+magellan collect --host https://smd.openchami.cluster
+```
+
+This example should work just like running on real hardware.
+
+> [!NOTE]
+> The emulator host may be different from the one in the README. Make sure to double-check the host!
+
+### Managing Secrets
+
+When connecting to an array of BMC nodes, some nodes may have different secret credentials than the rest. These secrets can be stored and used automatically by `magellan` when performing a `collect` or a `crawl`. All secrets are encrypted and are only accessible using the same `MASTER_KEY` as when stored originally.
+
+To store secrets using `magellan`:
+
+1. Set the `MASTER_KEY` environment variable. This can be generated using `magellan secrets generatekey`.
+
+```bash
+export MASTER_KEY=$(magellan secrets generatekey)
+```
+
+2. Store secret credentials for hosts shown by `magellan list`:
+
+```bash
+export bmc_host=https://172.16.0.105:443
+magellan secrets store $bmc_host $bmc_username:$bmc_password
+```
+
+There should be no output unless an error occurred.
+
+3. Print the list of hosts to confirm secrets are stored.
+
+```bash
+magellan secrets list
+```
+
+If you see your `bmc_host` listed in the output, that means that your secrets were stored successfully.
+
+Additionally, if you want to see the actually contents, make sure the `MASTER_KEY` environment variable is correctly set and do the following:
+
+```bash
+magellan secrets retrieve $bmc_host
+```
+
+4. Run either a `crawl` or `collect` and `magellan` should be a do find the credentials for each host.
+
+```bash
+magellan crawl -i $bmc_host
+magellan collect \
+  --username $default_bmc_username \
+  --password $default_bmc_password
+```
+
+If you pass agruments with the `--username/--password` flags, they will be used as a fallback if no credentials are found in the store. However, the secret store credentials are always used first if they exists.
+
+> [!NOTE]
+> Make sure that the `secretID` is EXACTLY as show with `magellan list`. Otherwise, `magellan` will not be able to do the lookup from the secret store correctly.
 
 ### Starting the Emulator
 
