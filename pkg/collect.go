@@ -134,6 +134,12 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 					log.Warn().Str("id", config.URI).Msg("username will be blank")
 				}
 
+				// get BMC username to send
+				bmcCreds, err := bmc.GetBMCCredentials(params.SecretStore, config.URI)
+				if err != nil {
+					log.Error().Str("id", config.URI).Msg("username will be blank")
+				}
+
 				// data to be sent to smd
 				data := map[string]any{
 					"ID":                 fmt.Sprintf("%v", node.String()[:len(node.String())-2]),
