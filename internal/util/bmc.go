@@ -1,8 +1,8 @@
 package util
 
 import (
-	"github.com/OpenCHAMI/magellan/pkg/bmc"
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	"github.com/davidallendj/magellan/pkg/bmc"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
 )
 

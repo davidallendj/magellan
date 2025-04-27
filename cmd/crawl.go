@@ -6,10 +6,10 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	urlx "github.com/OpenCHAMI/magellan/internal/url"
-	"github.com/OpenCHAMI/magellan/pkg/bmc"
-	"github.com/OpenCHAMI/magellan/pkg/crawler"
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	urlx "github.com/davidallendj/magellan/internal/url"
+	"github.com/davidallendj/magellan/pkg/bmc"
+	"github.com/davidallendj/magellan/pkg/crawler"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

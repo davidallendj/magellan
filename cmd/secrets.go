@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

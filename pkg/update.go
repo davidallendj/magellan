@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OpenCHAMI/magellan/pkg/bmc"
+	"github.com/davidallendj/magellan/pkg/bmc"
 	"github.com/stmcginnis/gofish"
 	"github.com/stmcginnis/gofish/redfish"
 )

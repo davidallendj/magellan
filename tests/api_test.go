@@ -22,8 +22,8 @@ import (
 
 	"flag"
 
-	magellan "github.com/davidallendj/magellan/internal"
 	"github.com/davidallendj/magellan/internal/util"
+	magellan "github.com/davidallendj/magellan/pkg"
 	"github.com/davidallendj/magellan/pkg/client"
 	"github.com/rs/zerolog/log"
 )

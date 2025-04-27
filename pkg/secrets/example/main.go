@@ -16,7 +16,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	"github.com/davidallendj/magellan/pkg/secrets"
 )
 
 func usage() {

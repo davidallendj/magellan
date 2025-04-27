@@ -94,9 +94,9 @@ dockers:
       - CHANGELOG.md
       - README.md
   - image_templates:
-      - &arm64v7_linux_image ghcr.io/openchami/{{.ProjectName}}:{{ .Tag }}-arm64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}-arm64
-      - ghcr.io/openchami/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-arm64
+      - &arm64v7_linux_image ghcr.io/davidallendj/{{.ProjectName}}:{{ .Tag }}-arm64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}-arm64
+      - ghcr.io/davidallendj/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}-arm64
     use: buildx
     build_flag_templates:
       - "--pull"

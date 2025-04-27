@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	magellan "github.com/OpenCHAMI/magellan/pkg"
-	"github.com/OpenCHAMI/magellan/pkg/bmc"
-	"github.com/OpenCHAMI/magellan/pkg/secrets"
+	magellan "github.com/davidallendj/magellan/pkg"
+	"github.com/davidallendj/magellan/pkg/bmc"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -15,8 +15,6 @@ import (
 var (
 	host             string
 	firmwareUri      string
-	firmwareVersion  string
-	component        string
 	transferProtocol string
 	showStatus       bool
 	Insecure         bool
@@ -124,9 +122,7 @@ func init() {
 	UpdateCmd.Flags().StringVar(&username, "username", "", "Set the BMC user")
 	UpdateCmd.Flags().StringVar(&password, "password", "", "Set the BMC password")
 	UpdateCmd.Flags().StringVar(&transferProtocol, "scheme", "https", "Set the transfer protocol")
-	UpdateCmd.Flags().StringVar(&firmwareUrl, "firmware-url", "", "Set the path to the firmware")
-	UpdateCmd.Flags().StringVar(&firmwareVersion, "firmware-version", "", "Set the version of firmware to be installed")
-	UpdateCmd.Flags().StringVar(&component, "component", "", "Set the component to upgrade (BMC|BIOS)")
+	UpdateCmd.Flags().StringVar(&firmwareUri, "firmware-uri", "", "Set the path to the firmware")
 	UpdateCmd.Flags().BoolVar(&showStatus, "status", false, "Get the status of the update")
 
 	checkBindFlagError(viper.BindPFlag("update.username", UpdateCmd.Flags().Lookup("username")))
