@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	"github.com/davidallendj/magellan/pkg/bmc"
 	"github.com/davidallendj/magellan/pkg/crawler"
 	"github.com/davidallendj/magellan/pkg/secrets"
@@ -101,7 +101,7 @@ func init() {
 	CrawlCmd.Flags().StringVarP(&username, "username", "u", "", "Set the username for the BMC")
 	CrawlCmd.Flags().StringVarP(&password, "password", "p", "", "Set the password for the BMC")
 	CrawlCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Ignore SSL errors")
-	CrawlCmd.Flags().StringVarP(&secretsFile, "file", "f", "nodes.json", "set the secrets file with BMC credentials")
+	CrawlCmd.Flags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "set the secrets file with BMC credentials")
 
 	checkBindFlagError(viper.BindPFlag("crawl.insecure", CrawlCmd.Flags().Lookup("insecure")))
 

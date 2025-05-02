@@ -7,7 +7,7 @@ import (
 
 	"github.com/cznic/mathutil"
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	magellan "github.com/davidallendj/magellan/pkg"
 	"github.com/davidallendj/magellan/pkg/auth"
 	"github.com/davidallendj/magellan/pkg/bmc"
