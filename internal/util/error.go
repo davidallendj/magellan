@@ -1,6 +1,8 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // FormatErrorList() is a wrapper function that unifies error list formatting
 // and makes printing error lists consistent.

@@ -13,7 +13,7 @@ func GetBMCCredentials(store secrets.SecretStore, id string) bmc.BMCCredentials 
 	)
 
 	if id == "" {
-		log.Error().Msg("failed to get BMC credentials: id was empty")
+		log.Error().Msg("failed to get BMC credentials: ID was empty")
 		return creds
 	}
 
@@ -36,11 +36,11 @@ func GetBMCCredentials(store secrets.SecretStore, id string) bmc.BMCCredentials 
 			log.Warn().Str("id", id).Err(err).Msg("no default credentials were set, they will be blank unless overridden by CLI flags")
 		} else {
 			// Default credentials found, use them.
-			log.Info().Str("id", id).Msg("default credentials found, using")
+			log.Info().Str("id", id).Msg("using default credentials found")
 			creds = defaultSecret
 		}
 	} else {
-		log.Info().Str("id", id).Msg("specific credentials found, using")
+		log.Info().Str("id", id).Msg("using specific credentials found")
 	}
 
 	return creds
