@@ -1,19 +1,23 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
-	"time"
+	"os"
 
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
+	magellan "github.com/davidallendj/magellan/pkg"
+	"github.com/davidallendj/magellan/pkg/crawler"
+	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	showCache bool
+	showCacheInfo bool
+	listUsername  string
+	listPassword  string
 )
 
 // The `list` command provides an easy way to show what was found
@@ -31,33 +35,70 @@ var ListCmd = &cobra.Command{
 		"See the 'scan' command on how to perform a scan.",
 	Run: func(cmd *cobra.Command, args []string) {
 		// check if we just want to show cache-related info and exit
-		if showCache {
-			fmt.Printf("cache: %s\n", cachePath)
-			return
+		if showCacheInfo {
+			magellan.PrintMapFormat(map[string]any{
+				"path": cachePath,
+			}, format)
+			os.Exit(0)
 		}
 
 		// load the assets found from scan
 		scannedResults, err := sqlite.GetScannedAssets(cachePath)
 		if err != nil {
-			log.Error().Err(err).Msg("failed to get scanned assets")
+			log.Error().Err(err).Str("path", cachePath).Msg("failed to get scanned assets from cache")
 		}
-		format = strings.ToLower(format)
-		if format == "json" {
-			b, err := json.Marshal(scannedResults)
-			if err != nil {
-				log.Error().Err(err).Msgf("failed to unmarshal scanned results")
-			}
-			fmt.Printf("%s\n", string(b))
-		} else {
-			for _, r := range scannedResults {
-				fmt.Printf("%s:%d (%s) @%s\n", r.Host, r.Port, r.Protocol, r.Timestamp.Format(time.UnixDate))
-			}
+
+		// print cache data in specified format
+		magellan.PrintRemoteAssets(scannedResults, format)
+	},
+}
+
+var listDrivesCmd = &cobra.Command{
+	Use: "drives [bmc_host]",
+	Example: `  # list all storage drives with username/password override and skip TLS verification
+  magellan list drives https://$bmc_host -u $bmc_username -p $bmc_password -i
+
+  # list all storage drives with secrets store defaults
+  export MASTER_KEY=$(magellan secrets generatekey)
+  magellan secrets store default $bmc_username:$bmc_password --secrets-file secrets/store.json
+  magellan list drives https://$bmc_host --secrets-file secrets/store.json`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		// Validate that the only argument is a valid URI
+		var err error
+		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+			return err
 		}
+		args[0], err = urlx.Sanitize(args[0])
+		if err != nil {
+			return fmt.Errorf("failed to sanitize URI: %w", err)
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		store := secrets.NewStaticStore(listUsername, listPassword)
+		drives, err := magellan.ListDrives(&crawler.CrawlerConfig{
+			URI:             args[0],
+			CredentialStore: store, //initSecretsStore(args[0]),
+			Insecure:        insecure,
+			UseDefault:      false,
+		})
+		if err != nil {
+			log.Error().Err(err).Msg("failed to get drives")
+			os.Exit(1)
+		}
+		magellan.PrintDrives(drives)
 	},
 }
 
 func init() {
-	ListCmd.Flags().StringVar(&format, "format", "", "Set the output format (json|default)")
-	ListCmd.Flags().BoolVar(&showCache, "cache-info", false, "Show cache information and exit")
+	ListCmd.Flags().StringVar(&format, "format", "none", "Set the output format (none|json|yaml)")
+	ListCmd.Flags().BoolVar(&showCacheInfo, "cache-info", false, "Alias for 'magellan cache info'")
+
+	listDrivesCmd.Flags().StringVarP(&listUsername, "username", "u", "", "Set the username for the BMC")
+	listDrivesCmd.Flags().StringVarP(&listPassword, "password", "p", "", "Set the password for the BMC")
+	listDrivesCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Ignore SSL errors")
+	listDrivesCmd.Flags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "set the secrets file with BMC credentials")
+
+	ListCmd.AddCommand(listDrivesCmd)
 	rootCmd.AddCommand(ListCmd)
 }
