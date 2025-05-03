@@ -14,6 +14,9 @@ type BMCCredentials struct {
 
 func GetBMCCredentialsDefault(store secrets.SecretStore) (BMCCredentials, error) {
 	var creds BMCCredentials
+	if store == nil {
+		return creds, fmt.Errorf("invalid secrets store")
+	}
 	if strCreds, err := store.GetSecretByID(secrets.DEFAULT_KEY); err != nil {
 		return creds, fmt.Errorf("get default BMC credentials from secret store: %w", err)
 	} else {
@@ -27,6 +30,9 @@ func GetBMCCredentialsDefault(store secrets.SecretStore) (BMCCredentials, error)
 
 func GetBMCCredentials(store secrets.SecretStore, id string) (BMCCredentials, error) {
 	var creds BMCCredentials
+	if store == nil {
+		return creds, fmt.Errorf("invalid secrets store")
+	}
 	if strCreds, err := store.GetSecretByID(id); err != nil {
 		return creds, fmt.Errorf("get BMC credentials from secret store: %w", err)
 	} else {

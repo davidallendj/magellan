@@ -97,6 +97,7 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 				var (
 					systems  []crawler.InventoryDetail
 					managers []crawler.Manager
+					storage  []crawler.Storage
 					config   = crawler.CrawlerConfig{
 						URI:             uri,
 						CredentialStore: params.SecretStore,
@@ -114,6 +115,11 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 				managers, err = crawler.CrawlBMCForManagers(config)
 				if err != nil {
 					log.Error().Err(err).Str("uri", uri).Msg("failed to crawl BMC for managers")
+				}
+
+				storage, err = crawler.CrawlBMCForStorage(config)
+				if err != nil {
+					log.Error().Err(err).Str("uri", uri).Msg("failed to crawl BMC for storage")
 				}
 
 				// we didn't find anything so do not proceed
@@ -144,6 +150,7 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 					"RediscoverOnUpdate": false,
 					"Systems":            systems,
 					"Managers":           managers,
+					"Storage":            storage,
 					"SchemaVersion":      1,
 				}
 

@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	"github.com/davidallendj/magellan/pkg/bmc"
 	"github.com/davidallendj/magellan/pkg/crawler"
 	"github.com/davidallendj/magellan/pkg/secrets"

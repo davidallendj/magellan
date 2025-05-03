@@ -83,6 +83,26 @@ type InventoryDetail struct {
 	Chassis_Model        string              `json:"chassis_model,omitempty"`        // Model of the Chassis
 }
 
+type Storage struct {
+	URI         string              `json:"uri"`
+	ID          string              `json:"id"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	DrivesCount int                 `json:"drives_count"`
+	Controllers []StorageController `json:"controllers"`
+}
+
+type StorageController struct {
+	Identifiers     []string `json:"identifiers"`
+	FirmwareVersion string   `json:"firmware_version"`
+	Location        string   `json:"location"`
+	Manufacturer    string   `json:"manufacturer"`
+	Model           string   `json:"model"`
+	PartNumber      string   `json:"part_number"`
+	SerialNumber    string   `json:"serial_number"`
+	SpeedGbps       float32  `json:"speed_gbps"`
+}
+
 // CrawlBMCForSystems pulls all pertinent information from a BMC.  It accepts a CrawlerConfig and returns a list of InventoryDetail structs.
 func CrawlBMCForSystems(config CrawlerConfig) ([]InventoryDetail, error) {
 	var (
@@ -205,6 +225,49 @@ func CrawlBMCForManagers(config CrawlerConfig) ([]Manager, error) {
 		log.Error().Err(err).Msg("failed to get managers from ServiceRoot")
 	}
 	return walkManagers(rf_managers, config.URI)
+}
+
+func CrawlBMCForStorage(config CrawlerConfig) ([]Storage, error) {
+	// get username and password from secret store
+	bmc_creds, err := loadBMCCreds(config)
+	if err != nil {
+		event := log.Error()
+		event.Err(err)
+		event.Msg("failed to load BMC credentials")
+		return nil, err
+	}
+	// initialize gofish client
+	var storage []Storage
+	client, err := gofish.Connect(gofish.ClientConfig{
+		Endpoint:  config.URI,
+		Username:  bmc_creds.Username,
+		Password:  bmc_creds.Password,
+		Insecure:  config.Insecure,
+		BasicAuth: true,
+	})
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "404:") {
+			err = fmt.Errorf("no ServiceRoot found.  This is probably not a BMC: %s", config.URI)
+		}
+		if strings.HasPrefix(err.Error(), "401:") {
+			err = fmt.Errorf("authentication failed.  Check your username and password: %s", config.URI)
+		}
+		event := log.Error()
+		event.Err(err)
+		event.Msg("failed to connect to BMC")
+		return storage, err
+	}
+	defer client.Logout()
+
+	// Obtain the ServiceRoot
+	rf_service := client.GetService()
+	log.Debug().Msgf("found ServiceRoot %s. Redfish Version %s", rf_service.ID, rf_service.RedfishVersion)
+
+	rf_storage, err := rf_service.Storage()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to get managers from ServiceRoot")
+	}
+	return walkStorage(rf_storage, config.URI)
 }
 
 // walkSystems processes a list of Redfish computer systems and their associated chassis,
@@ -367,6 +430,40 @@ func walkManagers(rf_managers []*redfish.Manager, baseURI string) ([]Manager, er
 		})
 	}
 	return managers, nil
+}
+
+func walkStorage(rf_storage []*redfish.Storage, baseURI string) ([]Storage, error) {
+	var storage []Storage
+	for _, rf_storage := range rf_storage {
+		var controllers []StorageController
+		var rf_storage_controllers, err = rf_storage.Controllers()
+		if err != nil {
+			log.Error().Err(err).Msg("failed to get storage controllers")
+		} else {
+			for _, controller := range rf_storage_controllers {
+				controllers = append(controllers, StorageController{
+					// Identifiers: controller.Identifiers,
+					FirmwareVersion: controller.FirmwareVersion,
+					Location:        controller.Location.Info,
+					Manufacturer:    controller.Manufacturer,
+					Model:           controller.Model,
+					PartNumber:      controller.PartNumber,
+					SerialNumber:    controller.SerialNumber,
+					SpeedGbps:       controller.SpeedGbps,
+				})
+			}
+		}
+
+		storage = append(storage, Storage{
+			URI:         baseURI + "/redfish/v1/Storage/" + rf_storage.ID,
+			ID:          rf_storage.ID,
+			Name:        rf_storage.Name,
+			Description: rf_storage.Description,
+			DrivesCount: rf_storage.DrivesCount,
+			Controllers: controllers,
+		})
+	}
+	return storage, nil
 }
 
 func loadBMCCreds(config CrawlerConfig) (bmc.BMCCredentials, error) {
