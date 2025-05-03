@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	"github.com/davidallendj/magellan/pkg/client"
 	"github.com/rs/zerolog/log"
 )

@@ -128,9 +128,7 @@ func init() {
 	checkBindFlagError(viper.BindPFlag("update.username", UpdateCmd.Flags().Lookup("username")))
 	checkBindFlagError(viper.BindPFlag("update.password", UpdateCmd.Flags().Lookup("password")))
 	checkBindFlagError(viper.BindPFlag("update.scheme", UpdateCmd.Flags().Lookup("scheme")))
-	checkBindFlagError(viper.BindPFlag("update.firmware-url", UpdateCmd.Flags().Lookup("firmware-url")))
-	checkBindFlagError(viper.BindPFlag("update.firmware-version", UpdateCmd.Flags().Lookup("firmware-version")))
-	checkBindFlagError(viper.BindPFlag("update.component", UpdateCmd.Flags().Lookup("component")))
+	checkBindFlagError(viper.BindPFlag("update.firmware-uri", UpdateCmd.Flags().Lookup("firmware-uri")))
 	checkBindFlagError(viper.BindPFlag("update.status", UpdateCmd.Flags().Lookup("status")))
 
 	rootCmd.AddCommand(UpdateCmd)

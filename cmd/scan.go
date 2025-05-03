@@ -13,7 +13,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/cznic/mathutil"
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
