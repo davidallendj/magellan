@@ -1,9 +1,11 @@
 magellan
 emulator/rf-emulator
+dist/*
 **/*.db
 **.tar.gz
 **.tar.zst
 **.part
-dist/*
+**.txt
+**.json
 **coverage.out**
 magellan.1
