@@ -38,7 +38,7 @@ var ListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// check if we just want to show cache-related info and exit
 		if showCacheInfo {
-			magellan.PrintMapFormat(map[string]any{
+			magellan.PrintMapWithFormat(map[string]any{
 				"path": cachePath,
 			}, format)
 			os.Exit(0)
@@ -69,6 +69,26 @@ var ListCmd = &cobra.Command{
 		default:
 			log.Error().Msg("unrecognized format")
 			os.Exit(1)
+
+		// print cache data in specified format
+		magellan.PrintRemoteAssets(scannedResults, format)
+	},
+}
+
+var listDrivesCmd = &cobra.Command{
+	Use: "drives [hosts...]",
+	Example: `  # list all storage drives with username/password override and skip TLS verification
+  magellan list drives https://$bmc_host -u $bmc_username -p $bmc_password -i
+
+  # list all storage drives with secrets store defaults
+  export MASTER_KEY=$(magellan secrets generatekey)
+  magellan secrets store default $bmc_username:$bmc_password --secrets-file secrets/store.json
+  magellan list drives https://$bmc_host --secrets-file secrets/store.json`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		// Validate that the only argument is a valid URI
+		var err error
+		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+			return err
 		}
 		args[0], err = urlx.Sanitize(args[0])
 		if err != nil {
@@ -93,7 +113,14 @@ var ListCmd = &cobra.Command{
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&listOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (json|yaml|table)")
-	ListCmd.Flags().BoolVar(&showCache, "cache-info", false, "Show cache information and exit")
+	ListCmd.Flags().StringVarP(&format, "format", "F", "none", "Set the output format (list|json|yaml)")
+	ListCmd.Flags().BoolVar(&showCacheInfo, "cache-info", false, "Alias for 'magellan cache info'")
+
+	listDrivesCmd.Flags().StringVarP(&listUsername, "username", "u", "", "Set the username for BMC login")
+	listDrivesCmd.Flags().StringVarP(&listPassword, "password", "p", "", "Set the password for BMC login")
+	listDrivesCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Skip TLS verification")
+	listDrivesCmd.Flags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "Set the path to secrets store file to store credentials")
+
+	ListCmd.AddCommand(listDrivesCmd)
 	rootCmd.AddCommand(ListCmd)
 }
