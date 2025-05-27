@@ -21,5 +21,5 @@ func PrintYAML(data any) {
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to marshal scanned results to JSON")
 	}
-	fmt.Printf("%s\n", string(b))
+	fmt.Print(string(b))
 }

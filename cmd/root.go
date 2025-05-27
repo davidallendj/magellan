@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/user"
 
 	magellan "github.com/davidallendj/magellan/internal"
 	"github.com/davidallendj/magellan/internal/util"
@@ -36,6 +37,7 @@ const (
 
 // CLI arguments as variables to not fiddle with error-prone strings
 var (
+	currentUser *user.User
 	accessToken string
 	timeout     int
 	concurrency int
@@ -192,4 +194,8 @@ func initSecretsStore(uri string) secrets.SecretStore {
 		store = &nodeCreds
 	}
 	return store
+}
+
+func validSecretArgs(masterKey string, secretsFile string) bool {
+	return masterKey != "" && secretsFile != ""
 }
