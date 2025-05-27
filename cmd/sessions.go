@@ -139,7 +139,7 @@ var sessionLoginCmd = &cobra.Command{
 		case "yaml":
 			util.PrintYAML(newSessions)
 		default:
-			log.Error().Msg("unrecognized output sessionOutputFormat")
+			log.Error().Msg("unrecognized output format")
 			os.Exit(1)
 		}
 	},
@@ -226,7 +226,7 @@ var sessionLogoutCmd = &cobra.Command{
 
 var sessionStatusCmd = &cobra.Command{
 	Use: "status",
-	Example: `  // show the host's session service status in YAML sessionOutputFormat
+	Example: `  // show the host's session service status in YAML format
   magellan sessions status https://172.21.0.2:5000 -u $bmc_username -p $bmc_password -i -F yaml`,
 	Args:  cobra.MinimumNArgs(1),
 	Short: "Show the status of the session service",
@@ -283,7 +283,7 @@ var sessionListCmd = &cobra.Command{
 				case FORMAT_YAML:
 					util.PrintYAML(session)
 				default:
-					log.Error().Msg("unrecognized output sessionOutputFormat")
+					log.Error().Msg("unrecognized output format")
 					os.Exit(1)
 				}
 
@@ -311,7 +311,7 @@ var sessionListCmd = &cobra.Command{
 				case FORMAT_YAML:
 					util.PrintYAML(sessionIDs)
 				default:
-					log.Error().Msg("unrecognized output sessionOutputFormat")
+					log.Error().Msg("unrecognized output format")
 					os.Exit(1)
 				}
 			}
@@ -339,7 +339,7 @@ func init() {
 	sessionCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "Set the password for BMC login")
 	sessionCmd.PersistentFlags().StringVar(&sessionTokenPath, "session-token-file", "", "Set the session token from a file")
 	sessionCmd.PersistentFlags().StringVar(&sessionToken, "session-token", "", "Set the session token")
-	sessionCmd.PersistentFlags().StringVarP(&sessionOutputFormat, "sessionOutputFormat", "F", "list", "Set the output sessionOutputFormat (list|json|yaml)")
+	sessionCmd.PersistentFlags().StringVarP(&sessionOutputFormat, "format", "F", "list", "Set the output sessionOutputFormat (list|json|yaml)")
 	sessionCmd.PersistentFlags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "Set the path to secrets store file to store credentials")
 
 	sessionCmd.MarkFlagRequired("username")
