@@ -99,7 +99,6 @@ func init() {
 	listDrivesCmd.Flags().StringVarP(&listPassword, "password", "p", "", "Set the password for BMC login")
 	listDrivesCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Skip TLS verification")
 	listDrivesCmd.Flags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "Set the path to secrets store file to store credentials")
-	listDrivesCmd.Flags().StringVarP(&listOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (list|json|yaml)")
 
 	ListCmd.AddCommand(listDrivesCmd)
 	rootCmd.AddCommand(ListCmd)
