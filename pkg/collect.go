@@ -31,17 +31,18 @@ import (
 // CollectParams is a collection of common parameters passed to the CLI
 // for the 'collect' subcommand.
 type CollectParams struct {
-	URI         string              // set by the 'host' flag
-	Concurrency int                 // set the of concurrent jobs with the 'concurrency' flag
-	Timeout     int                 // set the timeout with the 'timeout' flag
-	CaCertPath  string              // set the cert path with the 'cacert' flag
-	Verbose     bool                // set whether to include verbose output with 'verbose' flag
-	OutputPath  string              // set the path to save output with 'output' flag
-	OutputDir   string              // set the directory path to save output with `output-dir` flag
-	Format      string              // set the output format
-	ForceUpdate bool                // set whether to force updating SMD with 'force-update' flag
-	AccessToken string              // set the access token to include in request with 'access-token' flag
-	SecretStore secrets.SecretStore // set BMC credentials
+	URI          string              // set by the 'host' flag
+	Concurrency  int                 // set the of concurrent jobs with the 'concurrency' flag
+	Timeout      int                 // set the timeout with the 'timeout' flag
+	CaCertPath   string              // set the cert path with the 'cacert' flag
+	Verbose      bool                // set whether to include verbose output with 'verbose' flag
+	OutputPath   string              // set the path to save output with 'output' flag
+	OutputDir    string              // set the directory path to save output with `output-dir` flag
+	Format       string              // set the output format
+	ForceUpdate  bool                // set whether to force updating SMD with 'force-update' flag
+	AccessToken  string              // set the access token to include in request with 'access-token' flag
+	SessionToken string              // set the session token to use for auth
+	SecretStore  secrets.SecretStore // set BMC credentials
 }
 
 // This is the main function used to collect information from the BMC nodes via Redfish.
@@ -71,7 +72,7 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 
 	// set the client's params from CLI
 	wg.Add(params.Concurrency)
-	for i := 0; i < params.Concurrency; i++ {
+	for _ = range params.Concurrency {
 		go func() {
 			for {
 				sr, ok := <-chanAssets
@@ -129,7 +130,7 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 
 				// get BMC username to send
 				bmcCreds := bmc.GetBMCCredentialsOrDefault(params.SecretStore, config.URI)
-				if bmcCreds == (bmc.BMCCredentials{}) {
+				if bmcCreds.IsEmpty() {
 					log.Warn().Str("id", config.URI).Msg("username will be blank")
 				}
 

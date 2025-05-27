@@ -18,27 +18,27 @@ func PrintRemoteAssets(data []RemoteAsset, format string) {
 		util.PrintJSON(data)
 	case "yaml":
 		util.PrintYAML(data)
-	case "none":
+	case "list":
 		for _, r := range data {
 			fmt.Printf("%s:%d (%s) @%s\n", r.Host, r.Port, r.Protocol, r.Timestamp.Format(time.UnixDate))
 		}
 	default:
-		log.Error().Msg("unrecognized format")
+		log.Error().Msg("PrintRemoteAssets: unrecognized format")
 	}
 }
 
-func PrintMapFormat(data map[string]any, format string) {
+func PrintMapWithFormat(data map[string]any, format string) {
 	switch strings.ToLower(format) {
 	case "json":
 		util.PrintJSON(data)
 	case "yaml":
 		util.PrintYAML(data)
-	case "none":
+	case "list":
 		for k, v := range data {
 			fmt.Printf("%s: %v\n", k, v)
 		}
 	default:
-		log.Error().Msg("unrecognized format")
+		log.Error().Msg("PrintMapWithFormat: unrecognized format")
 	}
 }
 

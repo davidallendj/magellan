@@ -16,11 +16,13 @@ type CrawlerConfig struct {
 	URI             string // URI of the BMC
 	Insecure        bool   // Whether to ignore SSL errors
 	CredentialStore secrets.SecretStore
+	SessionID       string
+	SessionToken    string
 	UseDefault      bool
 }
 
 func (cc *CrawlerConfig) GetUserPass() (bmc.BMCCredentials, error) {
-	return loadBMCCreds(*cc)
+	return LoadBMCCreds(*cc)
 }
 
 type EthernetInterface struct {
@@ -124,7 +126,7 @@ func CrawlBMCForSystems(config CrawlerConfig) ([]InventoryDetail, error) {
 		rf_systems []*redfish.ComputerSystem
 	)
 	// get username and password from secret store
-	bmc_creds, err := loadBMCCreds(config)
+	bmc_creds, err := LoadBMCCreds(config)
 	if err != nil {
 		event := log.Error()
 		event.Err(err)
@@ -134,12 +136,17 @@ func CrawlBMCForSystems(config CrawlerConfig) ([]InventoryDetail, error) {
 
 	// initialize gofish client
 	client, err := gofish.Connect(gofish.ClientConfig{
-		Endpoint:  config.URI,
-		Username:  bmc_creds.Username,
-		Password:  bmc_creds.Password,
-		Insecure:  config.Insecure,
+		Endpoint: config.URI,
+		Username: bmc_creds.Username,
+		Password: bmc_creds.Password,
+		Insecure: config.Insecure,
+		Session: &gofish.Session{
+			ID:    config.SessionID,
+			Token: bmc_creds.SessionTokens[config.SessionID],
+		},
 		BasicAuth: true,
 	})
+
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "404:") {
 			err = fmt.Errorf("no ServiceRoot found.  This is probably not a BMC: %s", config.URI)
@@ -219,7 +226,7 @@ func CrawlBMCForSystems(config CrawlerConfig) ([]InventoryDetail, error) {
 func CrawlBMCForManagers(config CrawlerConfig) ([]Manager, error) {
 
 	// get username and password from secret store
-	bmc_creds, err := loadBMCCreds(config)
+	bmc_creds, err := LoadBMCCreds(config)
 	if err != nil {
 		event := log.Error()
 		event.Err(err)
@@ -262,7 +269,7 @@ func CrawlBMCForManagers(config CrawlerConfig) ([]Manager, error) {
 
 func CrawlBMCForStorage(config CrawlerConfig) ([]Storage, error) {
 	// get username and password from secret store
-	bmc_creds, err := loadBMCCreds(config)
+	bmc_creds, err := LoadBMCCreds(config)
 	if err != nil {
 		event := log.Error()
 		event.Err(err)
@@ -555,12 +562,12 @@ func walkStorage(rf_storage []*redfish.Storage, baseURI string) ([]Storage, erro
 	return storage, nil
 }
 
-func loadBMCCreds(config CrawlerConfig) (bmc.BMCCredentials, error) {
+func LoadBMCCreds(config CrawlerConfig) (bmc.BMCCredentials, error) {
 	// NOTE: it is possible for the SecretStore to be nil, so we need a check
 	if config.CredentialStore == nil {
 		return bmc.BMCCredentials{}, fmt.Errorf("credential store is invalid")
 	}
-	if creds := util.GetBMCCredentials(config.CredentialStore, config.URI); creds == (bmc.BMCCredentials{}) {
+	if creds := util.GetBMCCredentials(config.CredentialStore, config.URI); creds.IsEmpty() {
 		return creds, fmt.Errorf("%s: credentials blank for BMC", config.URI)
 	} else {
 		return creds, nil
