@@ -8,8 +8,15 @@ import (
 )
 
 type BMCCredentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username      string            `json:"username"`
+	Password      string            `json:"password"`
+	SessionTokens map[string]string `json:"session-tokens"`
+}
+
+func (c BMCCredentials) IsEmpty() bool {
+	return c.Username == "" &&
+		c.Password == "" &&
+		len(c.SessionTokens) == 0
 }
 
 func GetBMCCredentialsDefault(store secrets.SecretStore) (BMCCredentials, error) {

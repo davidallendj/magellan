@@ -95,7 +95,11 @@ func (l *LocalSecretStore) ListSecrets() (map[string]string, error) {
 	defer l.mu.RUnlock()
 
 	secretsCopy := make(map[string]string)
-	for key, value := range l.Secrets {
+	for key, _ := range l.Secrets {
+		value, err := l.GetSecretByID(key)
+		if err != nil {
+			continue
+		}
 		secretsCopy[key] = value
 	}
 	return secretsCopy, nil
