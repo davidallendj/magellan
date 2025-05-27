@@ -25,7 +25,7 @@ var secretsCmd = &cobra.Command{
   // generate new key and set environment variable
   export MASTER_KEY=$(magellan secrets generatekey)
 
-  // store specific BMC node creds for collect and crawl in default secrets store (--file/-f flag not set)
+  // store specific BMC node creds for collect and crawl in default secrets store (--secrets-file/-f flag not set)
   magellan secrets store $bmc_host $bmc_creds
 
   // retrieve creds from secrets store
@@ -110,8 +110,8 @@ var secretsStoreCmd = &cobra.Command{
 			}
 
 			// check the decoded string if it's a valid JSON and has creds
-			if !isValidCredsJSON(string(decoded)) {
-				log.Error().Err(err).Msg("value is not a valid JSON or is missing credentials")
+			if !json.Valid(decoded) {
+				log.Error().Err(err).Msg("decoded secret value is not a valid JSON")
 				os.Exit(1)
 			}
 
@@ -137,8 +137,9 @@ var secretsStoreCmd = &cobra.Command{
 			}
 
 			// make sure we have valid JSON with "username" and "password" properties
-			if !isValidCredsJSON(string(secretValue)) {
-				log.Error().Err(err).Msg("not a valid JSON or creds")
+
+			if !json.Valid([]byte(secretValue)) {
+				log.Error().Err(err).Msg("secret value is not a valid JSON")
 				os.Exit(1)
 			}
 			store, err = secrets.OpenStore(secretsFile)
@@ -156,21 +157,6 @@ var secretsStoreCmd = &cobra.Command{
 			os.Exit(1)
 		}
 	},
-}
-
-func isValidCredsJSON(val string) bool {
-	var (
-		valid = !json.Valid([]byte(val))
-		creds map[string]string
-		err   error
-	)
-	err = json.Unmarshal([]byte(val), &creds)
-	if err != nil {
-		return false
-	}
-	_, valid = creds["username"]
-	_, valid = creds["password"]
-	return valid
 }
 
 var secretsRetrieveCmd = &cobra.Command{
