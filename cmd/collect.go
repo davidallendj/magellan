@@ -50,9 +50,18 @@ var CollectCmd = &cobra.Command{
 		// try to load access token either from env var, file, or config if var not set
 		if accessToken == "" {
 			var err error
-			accessToken, err = auth.LoadAccessToken(tokenPath)
+			accessToken, err = auth.LoadAccessToken(accessTokenPath)
 			if err != nil && verbose {
 				log.Warn().Err(err).Msgf("could not load access token")
+			}
+		}
+
+		// try to load session token either from env var, file, or config if var is not set
+		if sessionToken == "" {
+			var err error
+			sessionToken, err = auth.LoadSessionToken(accessTokenPath)
+			if err != nil && verbose {
+				log.Warn().Err(err).Msgf("could not load session token")
 			}
 		}
 
@@ -145,6 +154,7 @@ func init() {
 	CollectCmd.Flags().StringVarP(&username, "username", "u", "", "Set the master BMC username")
 	CollectCmd.Flags().StringVarP(&password, "password", "p", "", "Set the master BMC password")
 	CollectCmd.Flags().StringVar(&secretsFile, "secrets-file", "", "Set path to the node secrets file")
+	CollectCmd.Flags().StringVar(&sessionToken, "session-token", "", "Set the session token to use for auth")
 	CollectCmd.Flags().StringVar(&scheme, "scheme", "https", "Set the default scheme used to query when not included in URI")
 	CollectCmd.Flags().StringVar(&protocol, "protocol", "tcp", "Set the protocol used to query")
 	CollectCmd.Flags().StringVarP(&outputPath, "output-file", "o", "", "Set the path to store collection data using HIVE partitioning")
