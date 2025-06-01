@@ -37,23 +37,24 @@ const (
 
 // CLI arguments as variables to not fiddle with error-prone strings
 var (
-	currentUser *user.User
-	accessToken string
-	timeout     int
-	concurrency int
-	ports       []int
-	protocol    string
-	cacertPath  string
-	username    string
-	password    string
-	cachePath   string
-	outputPath  string
-	outputDir   string
-	configPath  string
-	verbose     bool
-	debug       bool
-	forceUpdate bool
-	insecure    bool
+	currentUser     *user.User
+	accessToken     string
+	accessTokenPath string
+	timeout         int
+	concurrency     int
+	ports           []int
+	protocol        string
+	cacertPath      string
+	username        string
+	password        string
+	cachePath       string
+	outputPath      string
+	outputDir       string
+	configPath      string
+	verbose         bool
+	debug           bool
+	forceUpdate     bool
+	insecure        bool
 )
 
 // The `root` command doesn't do anything on it's own except display
@@ -137,7 +138,6 @@ func SetDefaults() {
 	viper.SetDefault("scan.subnet-masks", []net.IP{})
 	viper.SetDefault("scan.disable-probing", false)
 	viper.SetDefault("scan.disable-cache", false)
-	viper.SetDefault("collect.host", host)
 	viper.SetDefault("collect.username", "")
 	viper.SetDefault("collect.password", "")
 	viper.SetDefault("collect.protocol", "tcp")
