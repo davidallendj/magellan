@@ -51,7 +51,7 @@ type CollectParams struct {
 //
 // Requests can be made to several of the nodes using a goroutine by setting the q.Concurrency
 // property value between 1 and 10000.
-func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secrets.SecretStore) ([]map[string]any, error) {
+func CollectInventory(assets *[]RemoteAsset, params *CollectParams) ([]map[string]any, error) {
 	// check for available remote assets found from scan
 	if assets == nil {
 		return nil, fmt.Errorf("no assets found")
@@ -132,12 +132,6 @@ func CollectInventory(assets *[]RemoteAsset, params *CollectParams, store secret
 				bmcCreds := bmc.GetBMCCredentialsOrDefault(params.SecretStore, config.URI)
 				if bmcCreds.IsEmpty() {
 					log.Warn().Str("id", config.URI).Msg("username will be blank")
-				}
-
-				// get BMC username to send
-				bmcCreds, err := bmc.GetBMCCredentials(params.SecretStore, config.URI)
-				if err != nil {
-					log.Error().Str("id", config.URI).Msg("username will be blank")
 				}
 
 				// data to be sent to smd
