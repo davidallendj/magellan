@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	urlx "github.com/davidallendj/magellan/internal/url"
+	urlx "github.com/davidallendj/magellan/internal/urlx"
 	"github.com/davidallendj/magellan/pkg/auth"
 	"github.com/davidallendj/magellan/pkg/client"
 	"github.com/rs/zerolog/log"
@@ -40,7 +40,7 @@ var sendCmd = &cobra.Command{
 		// try to load access token either from env var, file, or config if var not set
 		if accessToken == "" {
 			var err error
-			accessToken, err = auth.LoadAccessToken(tokenPath)
+			accessToken, err = auth.LoadAccessToken(accessTokenPath)
 			if err != nil && verbose {
 				log.Warn().Err(err).Msgf("could not load access token")
 			} else if debug && accessToken != "" {

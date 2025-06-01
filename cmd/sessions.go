@@ -15,10 +15,11 @@ import (
 )
 
 var (
-	sessionID        string
-	sessionToken     string
-	sessionTokenPath string
-	storeToken       bool
+	sessionID           string
+	sessionToken        string
+	sessionTokenPath    string
+	sessionOutputFormat string
+	storeToken          bool
 )
 
 var sessionCmd = &cobra.Command{
@@ -128,7 +129,7 @@ var sessionLoginCmd = &cobra.Command{
 		}
 
 		// print the session IDs for created sessions
-		switch format {
+		switch sessionOutputFormat {
 		case "list":
 			for _, session := range newSessions {
 				fmt.Println(session.ID)
@@ -138,7 +139,7 @@ var sessionLoginCmd = &cobra.Command{
 		case "yaml":
 			util.PrintYAML(newSessions)
 		default:
-			log.Error().Msg("unrecognized output format")
+			log.Error().Msg("unrecognized output sessionOutputFormat")
 			os.Exit(1)
 		}
 	},
@@ -225,7 +226,7 @@ var sessionLogoutCmd = &cobra.Command{
 
 var sessionStatusCmd = &cobra.Command{
 	Use: "status",
-	Example: `  // show the host's session service status in YAML format
+	Example: `  // show the host's session service status in YAML sessionOutputFormat
   magellan sessions status https://172.21.0.2:5000 -u $bmc_username -p $bmc_password -i -F yaml`,
 	Args:  cobra.MinimumNArgs(1),
 	Short: "Show the status of the session service",
@@ -239,8 +240,8 @@ var sessionStatusCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
-			// show the service status in given format
-			switch format {
+			// show the service status in given sessionOutputFormat
+			switch sessionOutputFormat {
 			case FORMAT_LIST:
 				fmt.Printf("%s: %v (%d secs)", host, status.Enabled, status.Timeout)
 			case FORMAT_JSON:
@@ -274,7 +275,7 @@ var sessionListCmd = &cobra.Command{
 					continue
 				}
 
-				switch format {
+				switch sessionOutputFormat {
 				case FORMAT_LIST:
 					fallthrough
 				case FORMAT_JSON:
@@ -282,7 +283,7 @@ var sessionListCmd = &cobra.Command{
 				case FORMAT_YAML:
 					util.PrintYAML(session)
 				default:
-					log.Error().Msg("unrecognized output format")
+					log.Error().Msg("unrecognized output sessionOutputFormat")
 					os.Exit(1)
 				}
 
@@ -302,7 +303,7 @@ var sessionListCmd = &cobra.Command{
 					continue
 				}
 
-				switch format {
+				switch sessionOutputFormat {
 				case FORMAT_LIST:
 					fmt.Println(strings.Join(sessionIDs, "\n"))
 				case FORMAT_JSON:
@@ -310,7 +311,7 @@ var sessionListCmd = &cobra.Command{
 				case FORMAT_YAML:
 					util.PrintYAML(sessionIDs)
 				default:
-					log.Error().Msg("unrecognized output format")
+					log.Error().Msg("unrecognized output sessionOutputFormat")
 					os.Exit(1)
 				}
 			}
@@ -338,7 +339,7 @@ func init() {
 	sessionCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "Set the password for BMC login")
 	sessionCmd.PersistentFlags().StringVar(&sessionTokenPath, "session-token-file", "", "Set the session token from a file")
 	sessionCmd.PersistentFlags().StringVar(&sessionToken, "session-token", "", "Set the session token")
-	sessionCmd.PersistentFlags().StringVarP(&format, "format", "F", "list", "Set the output format (list|json|yaml)")
+	sessionCmd.PersistentFlags().StringVarP(&sessionOutputFormat, "sessionOutputFormat", "F", "list", "Set the output sessionOutputFormat (list|json|yaml)")
 	sessionCmd.PersistentFlags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "Set the path to secrets store file to store credentials")
 
 	sessionCmd.MarkFlagRequired("username")

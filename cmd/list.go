@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -19,7 +20,10 @@ import (
 
 var (
 	showCache        bool
+	showCacheInfo    bool
 	listOutputFormat string
+	listUsername     string
+	listPassword     string
 )
 
 // The `list` command provides an easy way to show what was found
@@ -40,7 +44,7 @@ var ListCmd = &cobra.Command{
 		if showCacheInfo {
 			magellan.PrintMapWithFormat(map[string]any{
 				"path": cachePath,
-			}, format)
+			}, listOutputFormat)
 			os.Exit(0)
 		}
 
@@ -69,9 +73,10 @@ var ListCmd = &cobra.Command{
 		default:
 			log.Error().Msg("unrecognized format")
 			os.Exit(1)
+		}
 
 		// print cache data in specified format
-		magellan.PrintRemoteAssets(scannedResults, format)
+		magellan.PrintRemoteAssets(scannedResults, listOutputFormat)
 	},
 }
 
@@ -113,7 +118,7 @@ var listDrivesCmd = &cobra.Command{
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&format, "format", "F", "none", "Set the output format (list|json|yaml)")
+	ListCmd.Flags().StringVarP(&listOutputFormat, "format", "F", "none", "Set the output format (list|json|yaml)")
 	ListCmd.Flags().BoolVar(&showCacheInfo, "cache-info", false, "Alias for 'magellan cache info'")
 
 	listDrivesCmd.Flags().StringVarP(&listUsername, "username", "u", "", "Set the username for BMC login")
