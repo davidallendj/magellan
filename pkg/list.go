@@ -27,21 +27,6 @@ func PrintRemoteAssets(data []RemoteAsset, format string) {
 	}
 }
 
-func PrintMapWithFormat(data map[string]any, format string) {
-	switch strings.ToLower(format) {
-	case "json":
-		util.PrintJSON(data)
-	case "yaml":
-		util.PrintYAML(data)
-	case "list":
-		for k, v := range data {
-			fmt.Printf("%s: %v\n", k, v)
-		}
-	default:
-		log.Error().Msg("PrintMapWithFormat: unrecognized format")
-	}
-}
-
 func ListDrives(cc *crawler.CrawlerConfig) ([]*redfish.Drive, error) {
 	user, err := cc.GetUserPass()
 	if err != nil {

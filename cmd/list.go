@@ -42,9 +42,7 @@ var ListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// check if we just want to show cache-related info and exit
 		if showCacheInfo {
-			magellan.PrintMapWithFormat(map[string]any{
-				"path": cachePath,
-			}, listOutputFormat)
+			printCacheInfo(listOutputFormat)
 			os.Exit(0)
 		}
 
