@@ -6,27 +6,25 @@ import (
 	"os"
 	"strconv"
 
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/davidallendj/magellan/internal/cache"
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
+	"github.com/davidallendj/magellan/internal/util"
 	magellan "github.com/davidallendj/magellan/pkg"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 var (
-	withHosts []string
-	withPorts []int
+	cacheOutputFormat string
+	interactive       bool
+	withHosts         []string
+	withPorts         []int
 )
 
 var cacheCmd = &cobra.Command{
 	Use:   "cache",
 	Short: "Manage found assets in cache.",
-	Run: func(cmd *cobra.Command, args []string) {
-		// show the help for cache and exit
-		if len(args) <= 0 {
-			cmd.Help()
-			os.Exit(0)
-		}
-	},
 }
 
 var cacheRemoveCmd = &cobra.Command{
@@ -88,9 +86,54 @@ var cacheRemoveCmd = &cobra.Command{
 	},
 }
 
+var cacheEditCmd = &cobra.Command{
+	Use:   "edit",
+	Short: "Modify cache data either interactively or non-interactively.",
+	Run: func(cmd *cobra.Command, args []string) {
+		// start the interactive editor
+		if interactive {
+			p := tea.NewProgram(cache.NewModel())
+			if _, err := p.Run(); err != nil {
+				fmt.Printf("failed to start the cache editor: %v", err)
+				os.Exit(1)
+			}
+		} else {
+			// only edit data with arguments
+		}
+	},
+}
+
+var cacheInfoCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Show cache-related information.",
+	Run: func(cmd *cobra.Command, args []string) {
+		printCacheInfo(cacheOutputFormat)
+	},
+}
+
 func init() {
+	// remove
 	cacheRemoveCmd.Flags().StringSliceVar(&withHosts, "with-hosts", []string{}, "Remove all assets with specified hosts")
 	cacheRemoveCmd.Flags().IntSliceVar(&withPorts, "with-ports", []int{}, "Remove all assets with specified ports")
-	cacheCmd.AddCommand(cacheRemoveCmd)
+
+	// edit
+	cacheEditCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Edit cache data using interactive editor")
+
+	cacheInfoCmd.Flags().StringVarP(&cacheOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (list|json|yaml)")
+
+	// commands
+	cacheCmd.AddCommand(cacheRemoveCmd, cacheEditCmd, cacheInfoCmd)
 	rootCmd.AddCommand(cacheCmd)
+}
+
+func printCacheInfo(format string) {
+	assets, err := sqlite.GetScannedAssets(cachePath)
+	if err != nil {
+		log.Error().Err(err).Str("path", cachePath).Msg("failed to get assets to print cache info")
+	}
+	cacheData := map[string]any{
+		"path":   cachePath,
+		"assets": len(assets),
+	}
+	util.PrintMapWithFormat(cacheData, format)
 }

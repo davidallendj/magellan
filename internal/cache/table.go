@@ -15,6 +15,10 @@ type Model struct {
 	Table    table.Model
 }
 
+func NewModel() Model {
+	return Model{}
+}
+
 func (m Model) Init() tea.Cmd { return nil }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
