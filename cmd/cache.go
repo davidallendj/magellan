@@ -270,6 +270,31 @@ var cacheInfoCmd = &cobra.Command{
 	},
 }
 
+var cacheEditCmd = &cobra.Command{
+	Use:   "edit",
+	Short: "Modify cache data either interactively or non-interactively.",
+	Run: func(cmd *cobra.Command, args []string) {
+		// start the interactive editor
+		if interactive {
+			p := tea.NewProgram(cache.NewModel())
+			if _, err := p.Run(); err != nil {
+				fmt.Printf("failed to start the cache editor: %v", err)
+				os.Exit(1)
+			}
+		} else {
+			// only edit data with arguments
+		}
+	},
+}
+
+var cacheInfoCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Show cache-related information.",
+	Run: func(cmd *cobra.Command, args []string) {
+		printCacheInfo(cacheOutputFormat)
+	},
+}
+
 func init() {
 	cacheEditCmd.Flags().StringVar(&host, "host", "", "Set the new host value.")
 	cacheEditCmd.Flags().IntSliceVar(&ports, "port", nil, "Set the new port values as comma-separated list.")
