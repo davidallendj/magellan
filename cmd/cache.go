@@ -6,8 +6,10 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/davidallendj/magellan/internal/cache"
+	"github.com/charmbracelet/lipgloss"
+	cache "github.com/davidallendj/magellan/internal/cache"
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
 	"github.com/davidallendj/magellan/internal/util"
 	magellan "github.com/davidallendj/magellan/pkg"
@@ -69,6 +71,7 @@ var cacheRemoveCmd = &cobra.Command{
 				Port: -1,
 			})
 		}
+
 		// Add all assets with specified ports (same port different hosts)
 		// This should produce the following SQL:
 		// DELETE FROM magellan_scanned_assets WHERE port=:port
@@ -87,25 +90,79 @@ var cacheRemoveCmd = &cobra.Command{
 }
 
 var cacheEditCmd = &cobra.Command{
-	Use:   "edit",
-	Short: "Modify cache data either interactively or non-interactively.",
+	Use: "edit",
+	Example: `  magellan cache edit
+  magellan cache edit --host https://172.16.0.101 --port 443 --protocol udp
+  magellan cache edit --host https://172.16.0.101
+	`,
+	Args:  cobra.ExactArgs(0),
+	Short: "Edit existing cache data.",
 	Run: func(cmd *cobra.Command, args []string) {
-		// start the interactive editor
+		var (
+			columns []table.Column
+			rows    []table.Row
+			styles  table.Styles
+		)
+
 		if interactive {
-			p := tea.NewProgram(cache.NewModel())
-			if _, err := p.Run(); err != nil {
-				fmt.Printf("failed to start the cache editor: %v", err)
+			// load the assets found from scan
+			scannedResults, err := sqlite.GetScannedAssets(cachePath)
+			if err != nil {
+				log.Error().Err(err).Str("path", cachePath).Msg("failed to get scanned assets from cache")
+			}
+
+			// set columns to cache headers
+			columns = []table.Column{
+				{Title: "hosts", Width: 20},
+				{Title: "ports", Width: 5},
+				{Title: "protocol", Width: 8},
+				{Title: "timestamp", Width: 12},
+			}
+
+			// set rows to cache data
+			for _, asset := range scannedResults {
+				rows = append(rows, table.Row{
+					asset.Host,
+					fmt.Sprintf("%d", asset.Port),
+					asset.Protocol,
+					fmt.Sprintf("%d", asset.Timestamp.Unix()),
+				})
+			}
+
+			// new table
+			assetsTable := table.New(
+				table.WithColumns(columns),
+				table.WithRows(rows),
+				table.WithFocused(true),
+				table.WithHeight(10),
+			)
+
+			// set up table styling
+			styles = table.DefaultStyles()
+			styles.Header = styles.Header.
+				BorderStyle(lipgloss.NormalBorder()).
+				BorderForeground(lipgloss.Color("240")).
+				BorderBottom(true).
+				Bold(false)
+			styles.Selected = styles.Selected.
+				Foreground(lipgloss.Color("229")).
+				Background(lipgloss.Color("57")).
+				Bold(false)
+			assetsTable.SetStyles(styles)
+
+			m := cache.Model{Table: assetsTable}
+			if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+				fmt.Println("Error running program:", err)
 				os.Exit(1)
 			}
-		} else {
-			// only edit data with arguments
 		}
 	},
 }
 
 var cacheInfoCmd = &cobra.Command{
-	Use:   "info",
-	Short: "Show cache-related information.",
+	Use:     "info",
+	Short:   "Show cache-related information and exit.",
+	Example: `  magellan cache info`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printCacheInfo(cacheOutputFormat)
 	},
@@ -116,13 +173,19 @@ func init() {
 	cacheRemoveCmd.Flags().StringSliceVar(&withHosts, "with-hosts", []string{}, "Remove all assets with specified hosts")
 	cacheRemoveCmd.Flags().IntSliceVar(&withPorts, "with-ports", []int{}, "Remove all assets with specified ports")
 
-	// edit
-	cacheEditCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Edit cache data using interactive editor")
+	cacheEditCmd.Flags().IntSliceVar(&ports, "port", nil, "Adds additional ports to scan for each host with unspecified ports.")
+	cacheEditCmd.Flags().StringVar(&scheme, "scheme", "https", "Set the default scheme to use if not specified in host URI. (default is 'https')")
+	cacheEditCmd.Flags().StringVar(&protocol, "protocol", "tcp", "Set the default protocol to use in scan. (default is 'tcp')")
+	cacheEditCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Start an interactive TUI to edit cache data")
 
 	cacheInfoCmd.Flags().StringVarP(&cacheOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (list|json|yaml)")
 
-	// commands
-	cacheCmd.AddCommand(cacheRemoveCmd, cacheEditCmd, cacheInfoCmd)
+	cacheCmd.AddCommand(
+		cacheRemoveCmd,
+		cacheInfoCmd,
+		cacheEditCmd,
+		ListCmd,
+	)
 	rootCmd.AddCommand(cacheCmd)
 }
 
