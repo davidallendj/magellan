@@ -272,9 +272,14 @@ var cacheInfoCmd = &cobra.Command{
 
 var cacheEditCmd = &cobra.Command{
 	Use: "edit",
-	Example: `  magellan cache edit
-  magellan cache edit --host https://172.16.0.101 --port 443 --protocol udp
-  magellan cache edit --host https://172.16.0.101
+	Example: `  // star the cache editor
+  magellan cache edit -i
+
+  // edit a single entry only changing values specified (e.g. port and protocol)
+  magellan cache edit https://172.16.0.101 --port 443 --protocol udp
+
+  // edit two entries' time stamps
+  magellan cache edit https://172.16.0.101 https://172.16.0.102 --timestamp 06/25/2025
 	`,
 	Args:  cobra.ExactArgs(0),
 	Short: "Edit existing cache data.",
@@ -287,17 +292,17 @@ var cacheEditCmd = &cobra.Command{
 
 		if interactive {
 			// load the assets found from scan
-			scannedResults, err := sqlite.GetScannedAssets(cachePath)
+			scannedResults, err := sqlite.GetRemoteAssets(cachePath)
 			if err != nil {
 				log.Error().Err(err).Str("path", cachePath).Msg("failed to get scanned assets from cache")
 			}
 
 			// set columns to cache headers
 			columns = []table.Column{
-				{Title: "hosts", Width: 20},
-				{Title: "ports", Width: 5},
-				{Title: "protocol", Width: 8},
-				{Title: "timestamp", Width: 12},
+				{Title: "host", Width: 30},
+				{Title: "ports", Width: 8},
+				{Title: "protocol", Width: 10},
+				{Title: "timestamp", Width: 20},
 			}
 
 			// set rows to cache data
@@ -310,7 +315,7 @@ var cacheEditCmd = &cobra.Command{
 				})
 			}
 
-			// new table
+			// create a new table
 			assetsTable := table.New(
 				table.WithColumns(columns),
 				table.WithRows(rows),
@@ -331,11 +336,16 @@ var cacheEditCmd = &cobra.Command{
 				Bold(false)
 			assetsTable.SetStyles(styles)
 
-			m := cache.Model{Table: assetsTable}
+			m := cache.NewModel(cachePath, &assetsTable)
 			if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 				fmt.Println("Error running program:", err)
 				os.Exit(1)
 			}
+		} else {
+			// non-interactive editting
+			// for _, host := range args {
+
+			// }
 		}
 	},
 }
