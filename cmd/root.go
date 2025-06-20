@@ -60,7 +60,44 @@ var (
 // The `root` command doesn't do anything on it's own except display
 // a help message and then exits.
 var rootCmd = &cobra.Command{
-	Use:   "magellan",
+	Use: "magellan",
+	Example: `  // a typical dynamic work flow with unknown hosts
+  magellan scan --subnet 172.16.0.0/24
+  magellan collect -v -F yaml -o nodes.yaml -u admin -p password123
+  $EDITOR nodes.yaml
+  magellan send -F yaml -d@nodes.yaml https://api.example.com
+  magellan collect -v | magellan send 
+
+  // show information in list
+  magellan list -F yaml
+  magellan list drives https://172.21.0.2:5000 -i -u admin -p password123
+
+  // performing a crawl with known hosts
+  magellan crawl https://172.16.0.100 -u admin -p password123 -i -F yaml -o nodes.yaml
+
+  // manage secrets with secret store
+  export MASTER_KEY=(magellan secrets generatekey)
+  magellan secrets store https://172.16.0.100 root:password123
+  magellan secrets list
+  magellan secrets retrieve https://172.16.0.100
+  magellan secrets remove https://172.16.0.100
+
+  // manage sessions with session authentication (can be used with secret store)
+  magellan sessions login https://172.16.0.100 -u root -p password123
+  magellan sessions list
+  magellan sessions delete --session-id $SESSION_ID --session-token $SESSION_TOKEN
+
+  // manage cache with cache editting
+  magellan cache new /tmp/magellan/$USER/assets.db
+  magellan cache add https://172.16.0.100 443 tcp
+  magellan cache remove https://172.16.0.100
+  magellan cache list
+  magellan cache info
+
+  // manage cache interactively with editor
+  magellan cache new ./my/new/cache.db
+  magellan cache edit -i --cache ./my/new/cache.db
+`,
 	Short: "Redfish-based BMC discovery tool",
 	Long:  "Redfish-based BMC discovery tool with dynamic discovery features.",
 	Run: func(cmd *cobra.Command, args []string) {
