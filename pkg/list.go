@@ -27,21 +27,6 @@ func PrintRemoteAssets(data []RemoteAsset, format string) {
 	}
 }
 
-func PrintMapWithFormat(data map[string]any, format string) {
-	switch strings.ToLower(format) {
-	case "json":
-		util.PrintJSON(data)
-	case "yaml":
-		util.PrintYAML(data)
-	case "list":
-		for k, v := range data {
-			fmt.Printf("%s: %v\n", k, v)
-		}
-	default:
-		log.Error().Msg("PrintMapWithFormat: unrecognized format")
-	}
-}
-
 func ListDrives(cc *crawler.CrawlerConfig) ([]*redfish.Drive, error) {
 	user, err := cc.GetUserPass()
 	if err != nil {
@@ -87,14 +72,31 @@ func ListDrives(cc *crawler.CrawlerConfig) ([]*redfish.Drive, error) {
 	return foundDrives, nil
 }
 
-func PrintDrives(drives []*redfish.Drive) {
-	for i, drive := range drives {
-		fmt.Printf("Drive %d\n", i)
-		fmt.Printf("\tManufacturer: %s\n", drive.Manufacturer)
-		fmt.Printf("\tModel: %s\n", drive.Model)
-		fmt.Printf("\tSize: %d GiB\n", (drive.CapacityBytes / 1024 / 1024 / 1024))
-		fmt.Printf("\tSerial number: %s\n", drive.SerialNumber)
-		fmt.Printf("\tPart number: %s\n", drive.PartNumber)
-		fmt.Printf("\tLocation: %s %d\n", drive.PhysicalLocation.PartLocation.LocationType, drive.PhysicalLocation.PartLocation.LocationOrdinalValue)
+func PrintDrives(drives []*redfish.Drive, format string) {
+	switch format {
+	case "json":
+		util.PrintJSON(drives)
+	case "yaml":
+		util.PrintYAML(drives)
+	case "list":
+		for i, drive := range drives {
+			fmt.Printf(`
+Drive %d
+\tManufacturuer: %s
+\tModel: %s
+\tSize: %d GiB
+\tSerial Number: %s
+\tPart Number: %s
+\tLocation: %s,%s
+`, i,
+				drive.Manufacturer,
+				drive.Model,
+				(drive.CapacityBytes / 1024 / 1024 / 1024),
+				drive.SerialNumber,
+				drive.PartNumber,
+				drive.PhysicalLocation.PartLocation.LocationType,
+				drive.PhysicalLocation.PartLocation.LocationOrdinalValue,
+			)
+		}
 	}
 }

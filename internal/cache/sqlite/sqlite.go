@@ -11,7 +11,17 @@ import (
 
 const TABLE_NAME = "magellan_scanned_assets"
 
-func CreateScannedAssetIfNotExists(path string) (*sqlx.DB, error) {
+func GetColumns() []string {
+	return []string{
+		"host",
+		"port",
+		"protocol",
+		"state",
+		"timestamp",
+	}
+}
+
+func CreateRemoteAssetsIfNotExists(path string) (*sqlx.DB, error) {
 	schema := fmt.Sprintf(`
 	CREATE TABLE IF NOT EXISTS %s (
 		host 		TEXT NOT NULL,
@@ -34,13 +44,13 @@ func CreateScannedAssetIfNotExists(path string) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func InsertScannedAssets(path string, assets ...magellan.RemoteAsset) error {
+func InsertRemoteAssets(path string, assets ...magellan.RemoteAsset) error {
 	if assets == nil {
 		return fmt.Errorf("states == nil")
 	}
 
 	// create database if it doesn't already exist
-	db, err := CreateScannedAssetIfNotExists(path)
+	db, err := CreateRemoteAssetsIfNotExists(path)
 	if err != nil {
 		return err
 	}
@@ -62,7 +72,33 @@ func InsertScannedAssets(path string, assets ...magellan.RemoteAsset) error {
 	return nil
 }
 
-func DeleteScannedAssets(path string, assets ...magellan.RemoteAsset) error {
+func DeleteRemoteAssetsByHost(path string, hosts ...string) error {
+	var (
+		db  *sqlx.DB
+		tx  *sqlx.Tx
+		err error
+	)
+	db, err = sqlx.Open("sqlite3", path)
+	if err != nil {
+		return fmt.Errorf("failed to open database: %v", err)
+	}
+	tx = db.MustBegin()
+	for _, host := range hosts {
+		sql := fmt.Sprintf(`DELETE FROM %s WHERE host='%s'`, TABLE_NAME, host)
+		_, err := tx.Exec(sql, &host)
+		if err != nil {
+			fmt.Printf("failed to execute DELETE transaction: %v\n", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
+	return nil
+}
+
+func DeleteRemoteAssets(path string, assets ...magellan.RemoteAsset) error {
 	var (
 		db  *sqlx.DB
 		tx  *sqlx.Tx
@@ -91,7 +127,7 @@ func DeleteScannedAssets(path string, assets ...magellan.RemoteAsset) error {
 	return nil
 }
 
-func GetScannedAssets(path string) ([]magellan.RemoteAsset, error) {
+func GetRemoteAssets(path string) ([]magellan.RemoteAsset, error) {
 	// check if path exists first to prevent creating the database
 	_, exists := util.PathExists(path)
 	if !exists {
@@ -110,4 +146,25 @@ func GetScannedAssets(path string) ([]magellan.RemoteAsset, error) {
 		return nil, fmt.Errorf("failed to retrieve assets: %v", err)
 	}
 	return results, nil
+}
+
+func GetRemoteAsset(path string, host string) (*magellan.RemoteAsset, error) {
+	// check if path exists first to prevent creating the database
+	_, exists := util.PathExists(path)
+	if !exists {
+		return nil, fmt.Errorf("no file found")
+	}
+
+	// now check if the file is the SQLite database
+	db, err := sqlx.Open("sqlite3", path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database: %v", err)
+	}
+
+	results := []magellan.RemoteAsset{}
+	err = db.Select(&results, fmt.Sprintf("SELECT * FROM %s ORDER BY host ASC, port ASC;", TABLE_NAME))
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve assets: %v", err)
+	}
+	return &results[0], nil
 }

@@ -154,7 +154,7 @@ var ScanCmd = &cobra.Command{
 			// TODO: change this to use an extensible plugin system for storage solutions
 			// (i.e. something like cache.InsertScannedAssets(path, assets) which implements a Cache interface)
 			if len(foundAssets) > 0 {
-				err = sqlite.InsertScannedAssets(cachePath, foundAssets...)
+				err = sqlite.InsertRemoteAssets(cachePath, foundAssets...)
 				if err != nil {
 					log.Error().Err(err).Msg("failed to write scanned assets to cache")
 				}
