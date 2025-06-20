@@ -147,3 +147,24 @@ func GetRemoteAssets(path string) ([]magellan.RemoteAsset, error) {
 	}
 	return results, nil
 }
+
+func GetRemoteAsset(path string, host string) (*magellan.RemoteAsset, error) {
+	// check if path exists first to prevent creating the database
+	_, exists := util.PathExists(path)
+	if !exists {
+		return nil, fmt.Errorf("no file found")
+	}
+
+	// now check if the file is the SQLite database
+	db, err := sqlx.Open("sqlite3", path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database: %v", err)
+	}
+
+	results := []magellan.RemoteAsset{}
+	err = db.Select(&results, fmt.Sprintf("SELECT * FROM %s ORDER BY host ASC, port ASC;", TABLE_NAME))
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve assets: %v", err)
+	}
+	return &results[0], nil
+}
