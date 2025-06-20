@@ -30,7 +30,7 @@ var CrawlCmd = &cobra.Command{
 	Args: func(cmd *cobra.Command, args []string) error {
 		// Validate that the only argument is a valid URI
 		var err error
-		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+		if err = cobra.ExactArgs(1)(cmd, args); err != nil {
 			return err
 		}
 		args[0], err = urlx.Sanitize(args[0])
