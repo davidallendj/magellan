@@ -36,7 +36,7 @@ var CollectCmd = &cobra.Command{
 	Long:  "Send request(s) to a collection of hosts running Redfish services found stored from the 'scan' in cache.\nSee the 'scan' command on how to perform a scan.",
 	Run: func(cmd *cobra.Command, args []string) {
 		// get probe states stored in db from scan
-		scannedResults, err := sqlite.GetScannedAssets(cachePath)
+		scannedResults, err := sqlite.GetRemoteAssets(cachePath)
 		if err != nil {
 			log.Error().Err(err).Msgf("failed to get scanned results from cache")
 		}
