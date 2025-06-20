@@ -343,9 +343,62 @@ var cacheEditCmd = &cobra.Command{
 			}
 		} else {
 			// non-interactive editting
-			// for _, host := range args {
+			for _, host := range args {
+				// get the asset from cache for host
+				asset, err := sqlite.GetRemoteAsset(cachePath, host)
+				if err != nil {
+					log.Warn().Err(err).
+						Str("host", host).
+						Str("path", cachePath).
+						Msg("failed to get asset from cache")
+					continue
+				}
+				if asset == nil {
+					log.Warn().Err(err).
+						Str("host", host).
+						Str("path", cachePath).
+						Msg("found asset is not valid")
+					continue
+				}
 
-			// }
+				// only modify values that are set
+				if host != "" {
+					asset.Host = host
+				}
+				if protocol != "" {
+					asset.Protocol = protocol
+				}
+				if timestampf != "" {
+					newTimestamp, err := dateparse.ParseAny(timestampf)
+					if err != nil {
+						log.Error().Err(err).Msg("failed to parse timestamp value")
+					} else {
+						asset.Timestamp = newTimestamp
+					}
+				}
+
+				// reinsert the asset into cache for each port
+				for _, port := range ports {
+					newAsset := *asset
+					newAsset.Port = port
+					err = sqlite.DeleteRemoteAssetsByHost(cachePath, host)
+					if err != nil {
+						log.Error().Err(err).
+							Str("host", host).
+							Str("path", cachePath).
+							Msg("failed to delete asset in cache")
+						continue
+					}
+					err = sqlite.InsertRemoteAssets(cachePath, newAsset)
+					if err != nil {
+						log.Error().Err(err).
+							Str("host", host).
+							Str("path", cachePath).
+							Msg("failed to re-insert asset into cache")
+					}
+				}
+
+			}
 		}
 	},
 }
