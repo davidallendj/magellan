@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/davidallendj/magellan/internal/cache/sqlite"
 	urlx "github.com/davidallendj/magellan/internal/urlx"
@@ -13,7 +11,6 @@ import (
 	"github.com/davidallendj/magellan/pkg/crawler"
 	"github.com/davidallendj/magellan/pkg/secrets"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
@@ -47,34 +44,13 @@ var ListCmd = &cobra.Command{
 		}
 
 		// load the assets found from scan
-		scannedResults, err := sqlite.GetScannedAssets(cachePath)
+		scannedResults, err := sqlite.GetRemoteAssets(cachePath)
 		if err != nil {
 			log.Error().Err(err).Str("path", cachePath).Msg("failed to get scanned assets from cache")
 		}
-		switch strings.ToLower(listOutputFormat) {
-		case FORMAT_JSON:
-			b, err := json.Marshal(scannedResults)
-			if err != nil {
-				log.Error().Err(err).Msgf("failed to unmarshal cached data to JSON")
-			}
-			fmt.Printf("%s\n", string(b))
-		case FORMAT_YAML:
-			b, err := yaml.Marshal(scannedResults)
-			if err != nil {
-				log.Error().Err(err).Msgf("failed to unmarshal cached data to YAML")
-			}
-			fmt.Printf("%s\n", string(b))
-		case FORMAT_LIST:
-			for _, r := range scannedResults {
-				fmt.Printf("%s:%d (%s) @%s\n", r.Host, r.Port, r.Protocol, r.Timestamp.Format(time.UnixDate))
-			}
-		default:
-			log.Error().Msg("unrecognized format")
-			os.Exit(1)
-		}
 
 		// print cache data in specified format
-		magellan.PrintRemoteAssets(scannedResults, listOutputFormat)
+		magellan.PrintRemoteAssets(scannedResults, strings.ToLower(listOutputFormat))
 	},
 }
 
@@ -111,18 +87,19 @@ var listDrivesCmd = &cobra.Command{
 			log.Error().Err(err).Msg("failed to get drives")
 			os.Exit(1)
 		}
-		magellan.PrintDrives(drives)
+		magellan.PrintDrives(drives, listOutputFormat)
 	},
 }
 
 func init() {
-	ListCmd.Flags().StringVarP(&listOutputFormat, "format", "F", "none", "Set the output format (list|json|yaml)")
+	ListCmd.Flags().StringVarP(&listOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (list|json|yaml)")
 	ListCmd.Flags().BoolVar(&showCacheInfo, "cache-info", false, "Alias for 'magellan cache info'")
 
 	listDrivesCmd.Flags().StringVarP(&listUsername, "username", "u", "", "Set the username for BMC login")
 	listDrivesCmd.Flags().StringVarP(&listPassword, "password", "p", "", "Set the password for BMC login")
 	listDrivesCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Skip TLS verification")
 	listDrivesCmd.Flags().StringVarP(&secretsFile, "secrets-file", "f", "secrets.json", "Set the path to secrets store file to store credentials")
+	listDrivesCmd.Flags().StringVarP(&listOutputFormat, "format", "F", FORMAT_LIST, "Set the output format (list|json|yaml)")
 
 	ListCmd.AddCommand(listDrivesCmd)
 	rootCmd.AddCommand(ListCmd)
