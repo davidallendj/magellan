@@ -1,13 +1,16 @@
-# Magellan
+# Magellan (Next Generation)
 
-The `magellan` CLI tool is a Redfish-based, board management controller (BMC) discovery tool designed to scan networks and is written in Go. The tool collects information from BMC nodes using the provided Redfish RESTful API with [`gofish`](https://github.com/stmcginnis/gofish) and loads the queried data into an [SMD](https://github.com/davidallendj/smd/tree/master) instance. The tool strives to be more flexible by implementing multiple methods of discovery to work for a wider range of systems (WIP) and is capable of using independently of other tools or services.
+The `magellan-ng` CLI tool is a Redfish-based, board management controller (BMC) discovery tool designed to scan networks and is written in Go. The tool collects information from BMC nodes using the provided Redfish RESTful API with [`gofish`](https://github.com/stmcginnis/gofish) and loads the queried data into an [SMD](https://github.com/davidallendj/smd/tree/master) instance. The tool strives to be more flexible by implementing multiple methods of discovery to work for a wider range of systems (WIP) and is capable of using independently of other tools or services.
 
 > [!NOTE]
 > The v0.1.0 version of `magellan` is incompatible with `smd` v2.15.3 and earlier due to `smd` lacking the inventory parsing code used with `magellan`'s output.**
 
+> [!NOTICE]
+> This is the enhanced version of the original OpenCHAMI tool that includes more features, refactoring, and bug fixes. This fork allows for more unconstrained experimentation that would not be possible in the original version. Some of the features added to this fork may be added to the original version in the future.
+
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-- [Magellan](#magellan)
+- [Magellan (Next Generation)](#magellan-next-generation)
   - [Main Features](#main-features)
   - [Getting Started](#getting-started)
   - [Building the Executable](#building-the-executable)
@@ -22,7 +25,8 @@ The `magellan` CLI tool is a Redfish-based, board management controller (BMC) di
     - [Managing Secrets](#managing-secrets-1)
     - [Starting the Emulator](#starting-the-emulator-1)
     - [Updating Firmware](#updating-firmware)
-    - [Getting an Access Token (WIP)](#getting-an-access-token-wip)
+    - [Session Authentication](#session-authentication)
+    - [Cache Management](#cache-management)
     - [Running with Docker](#running-with-docker)
   - [How It Works](#how-it-works)
   - [TODO](#todo)
@@ -30,7 +34,7 @@ The `magellan` CLI tool is a Redfish-based, board management controller (BMC) di
 
 <!-- TOC end -->
 
-<!-- TOC --><a name="openchami-magellan"></a>
+<!-- TOC --><a name="magellan-ng"></a>
 
 ## Main Features
 
@@ -42,6 +46,13 @@ The `magellan` tool comes packed with a handleful of features for doing discover
 - Integration with davidallendj SMD
 - Write inventory data to JSON
 - Store and manage BMC secrets
+
+Some features are unique to `magellan-ng` that the original version does not have, including:
+
+- Session authentication
+- Cache management
+- Storage included in inventory
+- More robust scanning
 
 See the [TODO](#todo) section for a list of soon-ish goals planned.
 
@@ -441,25 +452,13 @@ Then, the update status can be viewed by including the `--status` flag along wit
 watch -n 1 "./magellan update 172.16.0.110 --status --username $bmc_username --password $bmc_password | jq '.'"
 ```
 
-### Getting an Access Token (WIP)
+### Session Authentication
 
-The `magellan` tool has a `login` subcommand that works with the [`opaal`](https://github.com/davidallendj/opaal) service to obtain a token needed to access the SMD service. If the SMD instance requires authentication, set the `ACCESS_TOKEN` environment variable to have `magellan` include it in the header for HTTP requests to SMD.
+TBD
 
-```bash
-# must have a running OPAAL instance
-./magellan login --url https://opaal:4444/login
+### Cache Management
 
-# ...complete login flow to get token
-export ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIs...
-```
-
-Alternatively, if you are running the davidallendj quickstart in the [deployment recipes](https://github.com/davidallendj/deployment-recipes), you can run the provided script to generate a token and set the environment variable that way.
-
-```bash
-quickstart_dir=path/to/deployment/recipes/quickstart
-source $quickstart_dir/bash_functions.sh
-export ACCESS_TOKEN=$(gen_access_token)
-```
+TBD
 
 ### Running with Docker
 
