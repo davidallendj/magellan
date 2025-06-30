@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/OpenCHAMI/magellan/pkg/jaws"
-	"github.com/OpenCHAMI/magellan/pkg/pdu"
+	"github.com/davidallendj/magellan/pkg/jaws"
+	"github.com/davidallendj/magellan/pkg/pdu"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
