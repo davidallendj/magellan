@@ -187,7 +187,7 @@ var ScanCmd = &cobra.Command{
 				if err != nil {
 					log.Printf("failed to make cache directory: %v", err)
 				}
-				err = sqlite.InsertScannedAssets(cachePath, foundAssets...)
+				err = sqlite.InsertRemoteAssets(cachePath, foundAssets...)
 				if err != nil {
 					log.Error().Err(err).Msg("failed to write scanned assets to cache")
 				} else if verbose {
